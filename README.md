@@ -1,6 +1,6 @@
-# FluxHelpers
+# FluxExperimental
 
-Random Flux Utilities
+Experimental features for Flux.
 
 ## Exported Functions
 
@@ -17,7 +17,7 @@ arrays into `parameters` and `states`.
 Performance Implications: **Not really!!** We are marginally faster
 
 ```julia
-using Flux, FluxHelpers, BenchmarkTools, Metalhead
+using Flux, FluxExperimental, BenchmarkTools, Metalhead
 
 model = VGG19(; batchnorm=true)
 
@@ -34,6 +34,10 @@ end # 446.756 ms (2567 allocations: 1.07 GiB)
     re(p)
 end # 427.532 ms (4011 allocations: 1.07 GiB)
 ```
+
+### Performance
+
+* `enable_fast_mode!`
 
 ## API Reference
 

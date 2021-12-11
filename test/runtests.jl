@@ -1,6 +1,6 @@
-using FluxHelpers
+using FluxExperimental
 using Test
 
-@testset "FluxHelpers.jl" begin
+@testset "FluxExperimental.jl" begin
     # Write your tests here.
 end
