@@ -14,7 +14,7 @@ arrays into `parameters` and `states`.
 * `destructure_parameters`
 * `destructure_parameters_states`
 
-Performance Implications: **Not really!!** We are marginally faster
+Performance Implications: **Not really!!**
 
 ```julia
 using Flux, FluxExperimental, BenchmarkTools, Metalhead
@@ -43,6 +43,17 @@ end # 427.532 ms (4011 allocations: 1.07 GiB)
 
 * `save_flux_model`
 * `load_flux_model`
+
+### Layers
+
+Layers are not exported. They are available in the `FluxExperimental.Layers` module.
+
+#### Common Helper Functions
+
+* `conv1x1`, `conv3x3`, `conv5x5`
+* `conv_norm`, `conv1x1_norm`, `conv3x3_norm`, `conv5x5_norm`
+* `upsample_module`, `downsample_module`
+* `WeightNorm`
 
 ## API Reference
 

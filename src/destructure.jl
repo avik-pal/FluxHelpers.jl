@@ -20,6 +20,8 @@ end
     destructure_parameters_states(model)
     destructure_parameters_states(model, ps)
 
+# Arguments
+
 Destructures the model and returns 3 values:
 
     - `parameters`: Trainable parameters of the `model` (by default all arrays in the @functor model are trainable. This can be changed by defining the `Flux.trainable` function for the `model`)
@@ -119,6 +121,8 @@ end
 """
     destructure_parameters(model)
     destructure_parameters(model, ps)
+
+# Arguments
 
 Destructures the model and returns 2 values:
 

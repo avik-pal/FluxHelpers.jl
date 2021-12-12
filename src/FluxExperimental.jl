@@ -22,6 +22,8 @@ end
 include("destructure.jl")
 include("saving.jl")
 
+include("layers/layers.jl")
+
 export destructure_parameters_states, destructure_parameters
 export enable_fast_mode!
 export save_flux_model, load_flux_model
