@@ -39,6 +39,11 @@ end # 427.532 ms (4011 allocations: 1.07 GiB)
 
 * `enable_fast_mode!`
 
+### Loading & Saving Models
+
+* `save_flux_model`
+* `load_flux_model`
+
 ## API Reference
 
 All the exported functions have associated docstrings. At the moment there is no explicit documentation page,

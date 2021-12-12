@@ -183,7 +183,7 @@ end
 
 Zygote.@adjoint function _restructure_parameters(m, parameters_keys, parameters)
     m̄ = _restructure_parameters(m, parameters_keys, parameters)
-    numel = length(parameters) + length(states)
+    numel = length(parameters)
     function _restructure_parameters_pullback(dm)
         ∇parameters, _ = destructure_parameters(dm, parameters_keys)
         recv_numel = length(∇parameters)

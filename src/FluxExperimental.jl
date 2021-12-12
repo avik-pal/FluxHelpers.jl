@@ -1,6 +1,7 @@
 module FluxExperimental
 
 using CUDA
+using FileIO
 using Flux
 using Functors
 using Serialization
@@ -23,5 +24,6 @@ include("saving.jl")
 
 export destructure_parameters_states, destructure_parameters
 export enable_fast_mode!
+export save_flux_model, load_flux_model
 
 end
