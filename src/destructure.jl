@@ -1,5 +1,6 @@
-resolve_keys(key::Symbol, keys_children) = keys_children
-resolve_keys(key::Symbol, keys_children::Base.OneTo) = Symbol.(string(key) .* string.(keys_children))
+resolve_keys(key::Symbol, keys_children) = Symbol.((string(key) * "_") .* string.(keys_children))
+
+Flux.Parallel(connection, layers::Vector) = Flux.Parallel(connection, layers...)
 
 function fmap_custom(f, x, k=Symbol(); exclude=isleaf, cache=IdDict())
     haskey(cache, x) && return cache[x]
@@ -143,8 +144,7 @@ function destructure_parameters(m, ps::Zygote.IdSet=Flux.params(m).params)
         return x
     end
 
-    return (vcat(copy(parameters)...),
-            p -> _restructure_parameters(m, parameters_keys, p))
+    return (vcat(copy(parameters)...), p -> _restructure_parameters(m, parameters_keys, p))
 end
 
 function destructure_parameters(m, parameters_keys)
@@ -159,8 +159,7 @@ function destructure_parameters(m, parameters_keys)
         return x
     end
 
-    return (vcat(copy(parameters)...),
-            p -> _restructure_parameters(m, parameters_keys, p))
+    return (vcat(copy(parameters)...), p -> _restructure_parameters(m, parameters_keys, p))
 end
 
 function _restructure_parameters(m, parameters_keys, parameters)
