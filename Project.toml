@@ -15,6 +15,7 @@ Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 
 [compat]
+FileIO = "1"
 Flux = "0.12"
 Functors = "0.2"
 Zygote = "0.6"
