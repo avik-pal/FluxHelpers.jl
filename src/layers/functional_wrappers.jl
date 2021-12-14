@@ -16,7 +16,7 @@ function conv_norm(kernelsize, mapping, activation=identity; first_conv::Bool=tr
     activation_norm, activation_conv, norm_channels = first_conv ? (activation, identity, last(mapping)) :
                                                       (identity, activation, first(mapping))
     conv_layer = Conv(kernelsize, mapping, activation_conv; conv_kwargs...)
-    norm = if norm_layer == GroupNorm
+    norm = if norm_layer ∈ (GroupNorm, GroupNormV2)
         @assert group_count !== nothing
         norm_layer(norm_channels, group_count, activation_norm; norm_kwargs...)
     elseif norm_layer ∈ (BatchNorm, InstanceNorm)
@@ -29,22 +29,25 @@ function conv_norm(kernelsize, mapping, activation=identity; first_conv::Bool=tr
 end
 
 function conv1x1_norm(mapping, args...; conv_kwargs=Dict(), kwargs...)
+    conv_kwargs = copy(conv_kwargs)
     conv_kwargs[:pad] = 0
     return conv_norm((1, 1), mapping, args...; conv_kwargs=conv_kwargs, kwargs...)
 end
 
 function conv3x3_norm(mapping, args...; conv_kwargs=Dict(), kwargs...)
+    conv_kwargs = copy(conv_kwargs)
     conv_kwargs[:pad] = 1
     return conv_norm((3, 3), mapping, args...; conv_kwargs=conv_kwargs, kwargs...)
 end
 
 function conv5x5_norm(mapping, args...; conv_kwargs=Dict(), kwargs...)
+    conv_kwargs = copy(conv_kwargs)
     conv_kwargs[:pad] = 2
     return conv_norm((5, 5), mapping, args...; conv_kwargs=conv_kwargs, kwargs...)
 end
 
 # Downsample Module
-function downsample_module(mapping, resolution_mapping, args...; kwargs...)
+function downsample_module(mapping, resolution_mapping, args...; conv_kwargs=Dict(), kwargs...)
     in_resolution, out_resolution = resolution_mapping
     in_channels, out_channels = mapping
     @assert in_resolution > out_resolution
@@ -58,8 +61,11 @@ function downsample_module(mapping, resolution_mapping, args...; kwargs...)
             i == level_diff ? in_channels => out_channels : in_channels => in_channels
         end
 
+    conv_kwargs = copy(conv_kwargs)
+    conv_kwargs[:stride] = 2
     return Chain(vcat(map(x -> [x...],
-                          [conv3x3_norm(intermediate_mapping(i), args...; kwargs...).layers for i in 1:level_diff])...)...)
+                          [conv3x3_norm(intermediate_mapping(i), args...; conv_kwargs=conv_kwargs, kwargs...).layers
+                           for i in 1:level_diff])...)...)
 end
 
 # Upsample Module

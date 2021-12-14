@@ -2,7 +2,11 @@ resolve_keys(key::Symbol, keys_children) = Symbol.((string(key) * "_") .* string
 
 Flux.Parallel(connection, layers::Vector) = Flux.Parallel(connection, layers...)
 
-function fmap_custom(f, x, k=Symbol(); exclude=isleaf, cache=IdDict())
+function fmap_custom(f, x, k=nothing; exclude=isleaf, cache=IdDict())
+    # Because of https://github.com/FluxML/Flux.jl/blob/878b39cfd07b2366cd86f6a2b5b820990968c0ff/src/layers/basic.jl#L44
+    k = x isa Chain ? (k === nothing ? Symbol("_layers") : Symbol(string(k) * "_layers")) :
+        (k === nothing ? Symbol() : k)
+
     haskey(cache, x) && return cache[x]
     y = if exclude(x)
         f(x, k)
