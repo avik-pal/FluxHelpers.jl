@@ -60,7 +60,7 @@ Zygote.@nograd reset_mask!
 
 function (a::VariationalHiddenDropout)(x)
     Flux._isactive(a) || return x
-    is_mask_reset_allowed() && reset_mask!(a)
+    is_variational_hidden_dropout_mask_reset_allowed() && reset_mask!(a)
     return variational_hidden_dropout(x, a.mask; active=true)
 end
 
