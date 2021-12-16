@@ -19,7 +19,7 @@ function conv_norm(kernelsize, mapping, activation=identity; first_conv::Bool=tr
     norm = if norm_layer ∈ (GroupNorm, GroupNormV2)
         @assert group_count !== nothing
         norm_layer(norm_channels, group_count, activation_norm; norm_kwargs...)
-    elseif norm_layer ∈ (BatchNorm, InstanceNorm)
+    elseif norm_layer ∈ (BatchNorm, InstanceNorm, BatchNormV2)
         norm_layer(norm_channels, activation_norm; norm_kwargs...)
     else
         error("Unknown norm layer: " * string(norm_layer))

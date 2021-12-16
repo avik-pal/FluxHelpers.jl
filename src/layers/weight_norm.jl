@@ -10,7 +10,7 @@ Applies weight normalization to `ps` parameters in the given layer:
 
 Ref: [`https://arxiv.org/abs/1602.07868`](@ref)
 """
-struct WeightNorm{Re,P,S,D}
+struct WeightNorm{Re,P,S,D} <: AbstractFluxLayer
     layer_re::Re
     parameters::P
     states::S
@@ -19,14 +19,14 @@ end
 
 Flux.@functor WeightNorm (parameters, states)
 
-function Base.show(io::IO, wn::WeightNorm)
-    ps = Flux.params(wn)
-    p = update_parameters(wn)
-    l = wn.layer_re(p, wn.states)
-    print(io, "WeightNorm(")
-    print(io, l)
-    return print(") ", string(sum(length.(ps))), " Trainable Parameters")
-end
+# function Base.show(io::IO, wn::WeightNorm)
+#     ps = Flux.params(wn)
+#     p = update_parameters(wn)
+#     l = wn.layer_re(p, wn.states)
+#     print(io, "WeightNorm(")
+#     print(io, l)
+#     return print(") ", string(sum(length.(ps))), " Trainable Parameters")
+# end
 
 function WeightNorm(layer; dim::Union{Tuple,Vector,Int,Nothing}=nothing, ps=Flux.params(layer))
     if ps isa Array
