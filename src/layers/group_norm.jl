@@ -43,7 +43,7 @@ function (gn::GroupNormV2)(x::AbstractArray{T,N}) where {T,N}
 end
 
 function testmode!(m::GroupNormV2, mode=true)
-    return (m.active = (isnothing(mode) || mode == :auto) ? nothing : !mode; m)
+    return (m.attrs.active = (isnothing(mode) || mode == :auto) ? nothing : !mode; m)
 end
 
 function Base.show(io::IO, l::GroupNormV2)

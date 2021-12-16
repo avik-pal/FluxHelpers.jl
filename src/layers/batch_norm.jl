@@ -36,7 +36,7 @@ function (BN::BatchNormV2)(x::AbstractArray{T,N}) where {T,N}
 end
 
 function testmode!(m::BatchNormV2, mode=true)
-    return (m.active = (isnothing(mode) || mode == :auto) ? nothing : !mode; m)
+    return (m.attrs.active = (isnothing(mode) || mode == :auto) ? nothing : !mode; m)
 end
 
 function Base.show(io::IO, l::BatchNormV2)
@@ -48,9 +48,21 @@ end
 
 function (BN::BatchNormV2)(x::Union{CuArray{T,2},CuArray{T,4},CuArray{T,5}},
                            cache=nothing) where {T<:Union{Float32,Float64}}
-    res = BN.λ.(batchnormv2(BN.γ, BN.β, x, BN.μ, BN.σ², BN.momentum; hasaffine=hasaffine(BN),
-                            track_stats=BN.attrs.track_stats, cache=cache, alpha=1, beta=0, eps=BN.ϵ,
+    ha = hasaffine(BN)
+    ts = BN.attrs.track_stats
+    res = BN.λ.(batchnormv2(BN.γ, BN.β, x, BN.μ, BN.σ², BN.momentum; hasaffine=ha,
+                            track_stats=ts, cache=cache, alpha=1, beta=0, eps=BN.ϵ,
                             training=Flux._isactive(BN)))
+    if !Flux._isactive(BN)
+        if !ha
+            BN.β .= T(0)
+            BN.γ .= T(1)
+        end
+        if !ts
+            BN.μ .= T(0)
+            BN.σ² .= T(1)
+        end
+    end
     return res
 end
 
