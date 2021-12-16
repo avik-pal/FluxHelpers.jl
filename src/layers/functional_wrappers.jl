@@ -1,13 +1,13 @@
 # Basic Convolution Wrappers
-function conv1x1(mapping, activation=identity; stride::Int=1, bias::Bool=false, kwargs...)
+function conv1x1(mapping, activation=identity; stride::Int=1, bias=false, kwargs...)
     return Conv((1, 1), mapping, activation; stride=stride, bias=bias, kwargs...)
 end
 
-function conv3x3(mapping, activation=identity; stride::Int=1, bias::Bool=false, kwargs...)
+function conv3x3(mapping, activation=identity; stride::Int=1, bias=false, kwargs...)
     return Conv((3, 3), mapping, activation; stride=stride, pad=1, bias=bias, kwargs...)
 end
 
-function conv5x5(mapping, activation=identity; stride::Int=1, bias::Bool=false, kwargs...)
+function conv5x5(mapping, activation=identity; stride::Int=1, bias=false, kwargs...)
     return Conv((5, 5), mapping, activation; stride=stride, pad=2, bias=bias, kwargs...)
 end
 
