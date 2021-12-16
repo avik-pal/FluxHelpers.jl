@@ -48,15 +48,28 @@ end
 
 function (BN::BatchNormV2)(x::Union{CuArray{T,2},CuArray{T,4},CuArray{T,5}},
                            cache=nothing) where {T<:Union{Float32,Float64}}
-    res = BN.λ.(batchnorm(BN.γ, BN.β, x, BN.μ, BN.σ², BN.momentum; cache=cache, alpha=1, beta=0, eps=BN.ϵ,
-                          training=Flux._isactive(BN)))
-    if !hasaffine(BN)
-        BN.β .= T(0)
-        BN.γ .= T(1)
-    end
-    if !BN.attrs.track_stats
-        BN.μ .= T(0)
-        BN.σ² .= T(1)
-    end
+    res = BN.λ.(batchnormv2(BN.γ, BN.β, x, BN.μ, BN.σ², BN.momentum; hasaffine=hasaffine(BN),
+                            track_stats=BN.attrs.track_stats, cache=cache, alpha=1, beta=0, eps=BN.ϵ,
+                            training=Flux._isactive(BN)))
     return res
+end
+
+batchnormv2(args...; hasaffine, track_stats, kwargs...) = batchnorm(args...; kwargs...)
+
+Zygote.@adjoint function batchnormv2(g, b, x, running_mean, running_var, momentum; hasaffine, track_stats, kw...)
+    T = eltype(x)
+    y = batchnorm(g, b, x, running_mean, running_var, momentum; kw...) 
+    function batchnorm_pullback(Δ)
+        g = ∇batchnorm(g, b, x, Δ, running_mean, running_var, momentum; kw...)
+        if !hasaffine
+            b .= T(0)
+            g .= T(1)
+        end
+        if !track_stats
+            running_mean .= T(0)
+            running_var .= T(1)
+        end
+        return (g..., nothing, nothing, nothing)
+    end
+    return y, batchnorm_pullback
 end
