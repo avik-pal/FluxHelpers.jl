@@ -39,20 +39,17 @@ function norm_forward(l, x::AbstractArray{T,N}, reduce_dims, affine_shape) where
     if hasaffine(l)
         γ = reshape(l.γ, affine_shape)
         β = reshape(l.β, affine_shape)
-        return l.λ.(norm_forward(μ, σ², x, γ, β, l.ϵ))
+        return l.λ.(_norm_forward(μ, σ², x, γ, β, l.ϵ))
     else
-        return l.λ.(norm_forward(μ, σ², x, l.ϵ))
+        return l.λ.(_norm_forward(μ, σ², x, l.ϵ))
     end
 end
 
-norm_forward(μ::AbstractArray, σ²::AbstractArray, x::AbstractArray, ϵ::Real) = (x .- μ) ./ sqrt.(σ² .+ ϵ)
+_norm_forward(μ, σ², x, ϵ) = (x .- μ) ./ sqrt.(σ² .+ ϵ)
 
-function norm_forward(μ::AbstractArray, σ²::AbstractArray, x::AbstractArray, γ::AbstractArray, β::AbstractArray,
-                      ϵ::Real)
-    return γ .* (x .- μ) ./ sqrt.(σ² .+ ϵ) .+ β
-end
+_norm_forward(μ, σ², x, γ, β, ϵ) = γ .* (x .- μ) ./ sqrt.(σ² .+ ϵ) .+ β
 
-Zygote.@adjoint function norm_forward(μ, σ², x, γ, β, ϵ)
+Zygote.@adjoint function _norm_forward(μ, σ², x, γ, β, ϵ)
     N = ndims(x)
 
     σ²ϵ = σ² .+ ϵ
@@ -77,7 +74,7 @@ Zygote.@adjoint function norm_forward(μ, σ², x, γ, β, ϵ)
     return res, norm_backward
 end
 
-Zygote.@adjoint function norm_forward(μ, σ², x, ϵ)
+Zygote.@adjoint function _norm_forward(μ, σ², x, ϵ)
     N = ndims(x)
 
     σ²ϵ = σ² .+ ϵ
