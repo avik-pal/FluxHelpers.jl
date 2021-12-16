@@ -48,6 +48,15 @@ end
 
 function (BN::BatchNormV2)(x::Union{CuArray{T,2},CuArray{T,4},CuArray{T,5}},
                            cache=nothing) where {T<:Union{Float32,Float64}}
-    return BN.λ.(batchnorm(BN.γ, BN.β, x, BN.μ, BN.σ², BN.momentum; cache=cache, alpha=1, beta=0, eps=BN.ϵ,
-                           training=Flux._isactive(BN)))
+    res = BN.λ.(batchnorm(BN.γ, BN.β, x, BN.μ, BN.σ², BN.momentum; cache=cache, alpha=1, beta=0, eps=BN.ϵ,
+                          training=Flux._isactive(BN)))
+    if !hasaffine(BN)
+        BN.β .= T(0)
+        BN.γ .= T(1)
+    end
+    if !BN.attrs.track_stats
+        BN.μ .= T(0)
+        BN.σ² .= T(1)
+    end
+    return res
 end
