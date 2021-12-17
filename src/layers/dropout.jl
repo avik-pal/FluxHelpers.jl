@@ -32,7 +32,7 @@ Flux.@functor VariationalHiddenDropout
 """
     VariationalHiddenDropout(p, s)
 
-Like `Dropout` but with a mask which is not reset after each function call.
+Like [`Flux.Dropout`](@ref) but with a mask which is not reset after each function call.
 This is important for models like DeepEquilibriumModels where mask is reset
 only after the solve call is complete.
 

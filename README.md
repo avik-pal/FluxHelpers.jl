@@ -54,13 +54,18 @@ end # 427.532 ms (4011 allocations: 1.07 GiB)
 
 #### Proper Layers
 
-* `WeightNorm`
+* `WeightNorm`, `SpectralNorm`
 * `VariationalHiddenDropout`, `update_is_variational_hidden_dropout_mask_reset_allowed`
 * `AGNConv`, `AGNMaxPool`, `AGNMeanPool`
+* `GroupNormV2`, `BatchNormV2`
 
 ### Graph Neural Networks
 
 * `batch_graph_data`, `BatchedAtomicGraph`
+
+### Logging
+
+* `ParameterStateGradientWatcher` -- Currently has Wandb bindings. Similar to `wandb.watch` for Pytorch
 
 ## API Reference
 

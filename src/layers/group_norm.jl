@@ -1,3 +1,11 @@
+"""
+    GroupNormV2(channels::Integer, G::Integer, λ=identity;
+                initβ=zeros32, initγ=ones32,
+                affine=true, track_stats=false,
+                ϵ=1f-5, momentum=0.1f0)
+
+Same as [`Flux.GroupNorm`](@ref) but works well with `destructure_parameters` & `destructure_parameters_states`
+"""
 struct GroupNormV2{F,V,N,W}
     G::Int  # number of groups
     λ::F  # activation function

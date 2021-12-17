@@ -7,6 +7,7 @@ using Functors
 using Requires
 using Serialization
 using Statistics
+using Wandb
 using Zygote
 
 using Flux: hasaffine, ones32, zeros32, _isactive
@@ -55,6 +56,7 @@ end
 include("destructure.jl")
 include("saving.jl")
 
+# Useful Layer Implementations
 include("layers/norm_utils.jl")
 include("layers/functional_wrappers.jl")
 include("layers/weight_norm.jl")
@@ -64,6 +66,9 @@ include("layers/utils.jl")
 include("layers/agn.jl")
 include("layers/group_norm.jl")
 include("layers/batch_norm.jl")
+
+# Extending the logging capabilities of wandb
+include("wandb.jl")
 
 # Common Utilities
 export destructure_parameters_states, destructure_parameters
@@ -77,5 +82,7 @@ export WeightNorm, SpectralNorm
 export VariationalHiddenDropout, update_is_variational_hidden_dropout_mask_reset_allowed
 export AGNConv, AGNMaxPool, AGNMeanPool
 export GroupNormV2, BatchNormV2
+# Logging
+export ParameterStateGradientWatcher
 
 end
