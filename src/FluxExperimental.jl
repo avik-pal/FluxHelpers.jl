@@ -4,6 +4,7 @@ using CUDA
 using FileIO
 using Flux
 using Functors
+using LinearAlgebra
 using Requires
 using Serialization
 using Statistics
@@ -55,6 +56,7 @@ end
 
 include("destructure.jl")
 include("saving.jl")
+include("utils.jl")
 
 # Useful Layer Implementations
 include("layers/norm_utils.jl")

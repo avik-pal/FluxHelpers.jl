@@ -41,23 +41,25 @@ abstract type AtomicGraphLayer end
 (l::AtomicGraphLayer)(x::Tuple) = l(x[1], x[2])
 
 struct AGNConv{W,B,F} <: AtomicGraphLayer
-    selfweight::W
-    convweight::W
+    weight::W
     bias::B
-    σ::F
+    activation::F
 end
 
-function AGNConv(ch::Pair{<:Integer,<:Integer}, σ=softplus; initW=Flux.glorot_uniform, initb=zeros, T::DataType=Float32)
-    selfweight = T.(initW(ch[2], ch[1]))
-    convweight = T.(initW(ch[2], ch[1]))
-    b = T.(initb(ch[2], 1))
-    return AGNConv(selfweight, convweight, b, σ)
+function AGNConv(ch::Pair{<:Integer,<:Integer}, activation=gelu; initW=Flux.glorot_uniform, initb=zeros,
+                 T::DataType=Float32)
+    weight = T(2) .* T.(initW(ch[2], ch[1]))
+    b = initb(ch[2], 1)
+    if !(b isa Flux.Zeros)
+        b = T.(b)
+    end
+    return AGNConv(weight, b, activation)
 end
 
-@functor AGNConv
+Flux.@functor AGNConv
 
 function (l::AGNConv)(lapl::AbstractMatrix, X::AbstractMatrix)
-    out_mat = Flux.normalise(l.σ.(l.convweight * X * lapl .+ l.selfweight * X .+ l.bias); dims=[1, 2])
+    out_mat = normalise01(l.activation.(l.weight * X * (lapl + I) .+ l.bias))
     return lapl, out_mat
 end
 
@@ -73,14 +75,10 @@ struct AGNMeanPool <: AtomicGraphLayer
     pad::Int64
 end
 
-function AGNPool(pool_type::Symbol, in_num_features::Int64, out_num_features::Int64, pool_width_frac::Float64)
-    dim, stride, pad = compute_pool_params(in_num_features, out_num_features, Float64(pool_width_frac))
-    if pool_type == :max
-        T = AGNMaxPool
-    elseif pool_type == :mean
-        T = AGNMeanPool
-    end
-    return T(dim, stride, pad)
+function AGNPool(pool_type::Symbol, ch::Pair{<:Integer,<:Integer}, pool_width_frac::AbstractFloat)
+    in_num_features, out_num_features = ch
+    dim, stride, pad = compute_pool_params(in_num_features, out_num_features, pool_width_frac)
+    return (pool_type == :max ? AGNMaxPool : AGNMeanPool)(dim, stride, pad)
 end
 
 AGNMaxPool(args...) = AGNPool(:max, args...)
@@ -90,11 +88,11 @@ AGNMeanPool(args...) = AGNPool(:mean, args...)
 function (m::AGNMaxPool)(lapl::AbstractMatrix, X::AbstractMatrix)
     x = reshape(X, (size(X)..., 1, 1))
     pdims = PoolDims(x, (m.dim, 1); padding=(m.pad, 0), stride=(m.stride, 1))
-    return mean(maxpool(x, pdims); dims=2)[:, :, 1, 1]
+    return lapl, mean(maxpool(x, pdims); dims=2)[:, :, 1, 1]
 end
 
 function (m::AGNMeanPool)(lapl::AbstractMatrix, X::AbstractMatrix)
     x = reshape(X, (size(X)..., 1, 1))
     pdims = PoolDims(x, (m.dim, 1); padding=(m.pad, 0), stride=(m.stride, 1))
-    return mean(meanpool(x, pdims); dims=2)[:, :, 1, 1]
+    return lapl, mean(meanpool(x, pdims); dims=2)[:, :, 1, 1]
 end
