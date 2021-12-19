@@ -1,3 +1,5 @@
+using ChemistryFeaturization
+
 # Batching Utilities
 """
     batch_graph_data(laplacians, encoded_features)
