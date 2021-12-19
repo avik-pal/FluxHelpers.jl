@@ -41,7 +41,7 @@ function BatchNormV2(chs::Int, λ=identity; initβ=zeros32, initγ=ones32, affin
 end
 
 function batchnorm_fallback(BN::BatchNormV2, x::AbstractArray{T,N}) where {T,N}
-    @assert size(x, ndims(x)-1) == BN.chs
+    @assert size(x, ndims(x) - 1) == BN.chs
     reduce_dims = [1:(N - 2); N]
     affine_shape = ntuple(i -> i == N - 1 ? size(x, N - 1) : 1, N)
     return norm_forward(BN, x, reduce_dims, affine_shape)
@@ -61,10 +61,8 @@ function Base.show(io::IO, l::BatchNormV2)
 end
 
 # Use our kernels for now
-function (BN::BatchNormV2)(x::Union{CuArray{T,2},CuArray{T,4},CuArray{T,5}},
-                           cache=nothing) where {T<:Union{Float32,Float64}}
+function (BN::BatchNormV2)(x::Union{CuArray{T,2},CuArray{T,4},CuArray{T,5}}) where {T<:Union{Float32,Float64}}
     (!hasaffine(BN) || !BN.attrs.track_stats) && return batchnorm_fallback(BN, x)
-    return BN.λ.(batchnorm(BN.γ, BN.β, x, BN.μ, BN.σ², BN.momentum;
-                           cache=cache, alpha=1, beta=0, eps=BN.ϵ,
+    return BN.λ.(batchnorm(BN.γ, BN.β, x, BN.μ, BN.σ², BN.momentum; cache=cache, alpha=1, beta=0, eps=BN.ϵ,
                            training=Flux._isactive(BN)))
 end

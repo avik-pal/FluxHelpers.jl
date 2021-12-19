@@ -38,8 +38,9 @@ end
 Prints the `msg` during the forward pass. During the backwards pass prints `∇(msg)`.
 """
 @inline function debug_backward_pass(msg::String)
+    start_time = time()
     return Zygote.hook(Δ -> begin
-                           println("∇(" * msg * ")")
+                           println("∇(" * msg * ") -- Took $(time() - start_time) s")
                            return Δ
                        end, println(msg))
 end

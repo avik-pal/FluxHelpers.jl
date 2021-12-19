@@ -85,7 +85,7 @@ Zygote.@adjoint function _norm_forward(μ, σ², x, ϵ)
 
         Δx = inv_deno .* Δ
         Δμ = -sum(Δx; dims=reduce_dims_stats)
-        Δσ² = sum(-eltype(x)(0.5) .* res_2 .* Δ ./ σ²ϵ; dims=reduce_dims_stats)
+        Δσ² = sum(-eltype(x)(0.5) .* res .* Δ ./ σ²ϵ; dims=reduce_dims_stats)
 
         return (Δμ, Δσ², Δx, nothing)
     end
