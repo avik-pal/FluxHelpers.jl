@@ -63,6 +63,6 @@ end
 # Use our kernels for now
 function (BN::BatchNormV2)(x::Union{CuArray{T,2},CuArray{T,4},CuArray{T,5}}) where {T<:Union{Float32,Float64}}
     (!hasaffine(BN) || !BN.attrs.track_stats) && return batchnorm_fallback(BN, x)
-    return BN.λ.(batchnorm(BN.γ, BN.β, x, BN.μ, BN.σ², BN.momentum; cache=cache, alpha=1, beta=0, eps=BN.ϵ,
+    return BN.λ.(batchnorm(BN.γ, BN.β, x, BN.μ, BN.σ², BN.momentum; alpha=1, beta=0, eps=BN.ϵ,
                            training=Flux._isactive(BN)))
 end
