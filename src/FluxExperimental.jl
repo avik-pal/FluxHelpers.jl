@@ -35,7 +35,8 @@ end
 """
     debug_backward_pass(msg::String)
 
-Prints the `msg` during the forward pass. During the backwards pass prints `∇(msg)`.
+Prints the `msg` during the forward pass. During the backwards pass prints `∇(msg)`. Also prints
+the time it took to reach the backward pass since the forward pass happended.
 """
 @inline function debug_backward_pass(msg::String)
     start_time = Zygote.@ignore time()
@@ -54,6 +55,9 @@ function enable_fast_mode!()
     CUDA.math_mode!(CUDA.FAST_MATH)
     return nothing
 end
+
+# Needed for destructure
+include("layers/fchain.jl")
 
 include("destructure.jl")
 include("saving.jl")
@@ -81,10 +85,12 @@ export debug_backward_pass
 # Layers
 export conv1x1, conv3x3, conv5x5, conv1x1_norm, conv3x3_norm, conv5x5_norm, conv_norm, downsample_module,
        upsample_module
+export FChain
 export WeightNorm, SpectralNorm
 export VariationalHiddenDropout, update_is_variational_hidden_dropout_mask_reset_allowed
 export AGNConv, AGNMaxPool, AGNMeanPool
 export GroupNormV2, BatchNormV2
+export ReshapeLayer, FlattenLayer, SelectDim
 # Logging
 export ParameterStateGradientWatcher
 

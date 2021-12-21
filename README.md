@@ -58,6 +58,8 @@ end # 427.532 ms (4011 allocations: 1.07 GiB)
 * `VariationalHiddenDropout`, `update_is_variational_hidden_dropout_mask_reset_allowed`
 * `AGNConv`, `AGNMaxPool`, `AGNMeanPool`
 * `GroupNormV2`, `BatchNormV2`
+* `FChain`
+* `ReshapeLayer`, `FlattenLayer`, `SelectDim`
 
 ### Graph Neural Networks
 

@@ -6,3 +6,39 @@ Flux.applychain(fs::Tuple, x::Tuple) = Flux.applychain(Base.tail(fs), first(fs)(
 
 (c::Chain)(x1, xs...) = Flux.applychain(Tuple(c.layers), x1, xs...)
 (c::Chain)(x::Tuple) = c(x...)
+
+# Some wrappers around common functions for prettier printing
+"""
+    ReshapeLayer(dims)
+
+Reshapes the passed arrays to have a size of `(dims..., :)`
+"""
+struct ReshapeLayer{D}
+    dims::D
+end
+
+(r::ReshapeLayer)(x) = reshape(x, r.dims..., :)
+(r::ReshapeLayer)(xs...) = r.(xs)
+
+"""
+    FlattenLayer()
+
+Flattens the passed arrays to 2D matrices.
+"""
+struct FlattenLayer end
+
+(f::FlattenLayer)(x::AbstractArray{T,N}) where {T,N} = reshape(x, :, size(x, N))
+(f::FlattenLayer)(xs...) = f.(xs)
+
+"""
+    SelectDim(dim, i)
+
+See the documentation for `selectdim` for more information.
+"""
+struct SelectDim{I}
+    dim::Int
+    i::I
+end
+
+(s::SelectDim)(x) = selectdim(x, s.dim, s.i)
+(s::SelectDim)(xs...) = s.(xs)
