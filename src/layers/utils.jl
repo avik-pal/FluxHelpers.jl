@@ -42,3 +42,14 @@ end
 
 (s::SelectDim)(x) = selectdim(x, s.dim, s.i)
 (s::SelectDim)(xs...) = s.(xs)
+
+"""
+    NoOpLayer()
+
+As the name suggests. Does nothing. Better to use this than
+`identity` since it takes in multiple inputs
+"""
+struct NoOpLayer end
+
+(noop::NoOpLayer)(x...) = x
+(noop::NoOpLayer)(x) = x

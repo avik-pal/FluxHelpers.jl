@@ -13,10 +13,7 @@ struct FChain{T}
         xs = flatten_model(xs)
         return new{typeof(xs)}(xs)
     end
-    function FChain(xs::AbstractVector)
-        xs = flatten_model(xs)
-        return new{typeof(xs)}(xs)  # allows FChain(Any[Layer, Layer, ...]), type-unstable
-    end
+    FChain(xs::AbstractVector) = FChain(xs...)
 end
 
 function flatten_model(layers::Union{AbstractVector,Tuple})
@@ -50,9 +47,9 @@ Flux.@functor FChain
 
 (c::FChain)(x...) = foldl((y, f) -> f(y...), (x, c.layers...))
 
-(c::FChain{<:AbstractVector})(x) = foldl((y, f) -> f(y), vcat([x], c.layers))
+# (c::FChain{<:AbstractVector})(x) = foldl((y, f) -> f(y), vcat([x], c.layers))
 
-(c::FChain{<:AbstractVector})(x...) = foldl((y, f) -> f(y...), vcat([x], c.layers))
+# (c::FChain{<:AbstractVector})(x...) = foldl((y, f) -> f(y...), vcat([x], c.layers))
 
 Base.getindex(c::FChain, i::AbstractArray) = FChain(c.layers[i]...)
 

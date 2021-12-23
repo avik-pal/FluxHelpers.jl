@@ -90,7 +90,7 @@ export WeightNorm, SpectralNorm
 export VariationalHiddenDropout, update_is_variational_hidden_dropout_mask_reset_allowed
 export AGNConv, AGNMaxPool, AGNMeanPool
 export GroupNormV2, BatchNormV2
-export ReshapeLayer, FlattenLayer, SelectDim
+export ReshapeLayer, FlattenLayer, SelectDim, NoOpLayer
 # Logging
 export ParameterStateGradientWatcher
 
