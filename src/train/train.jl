@@ -41,6 +41,7 @@ function fit_one_epoch!(model, data_iterator, loss_function; device=gpu)
 
     # Force GC at the end of an epoch
     GC.gc(true)
+    CUDA.reclaim()
 
     training_statistics = (time_data_transfer=time_data_transfer, time_forward_backward=time_forward_backward,
                            time_parameter_update=time_parameter_update, epoch_loss=epoch_loss,

@@ -23,11 +23,39 @@ function __init__()
     end
 end
 
+on_gpu(arr::CuArray) = true
+on_gpu(arr::AbstractArray) = false
+
+"""
+    on_gpu(layer)
+
+Checks if the parameters and states of the layer is in GPU memory. If one is in GPU and other is not,
+then a warning is displayed. If there are no parameters and states then false is returned by default.
+"""
+on_gpu(layer) = on_gpu(destructure_parameters_states(layer)[1:2]...)
+
+function on_gpu(p, s)
+    if length(p) > 0 && length(s) > 0
+        p_device = on_gpu(p)
+        s_device = on_gpu(s)
+        if !(p_device == s_device)
+            @warn "Layer parameters and states are not on the same device"
+        end
+        return p_device && s_device
+    elseif length(p) == 0
+        return on_gpu(s)
+    elseif length(s) == 0
+        return on_gpu(p)
+    else
+        return false
+    end
+end
+
 abstract type AbstractFluxLayer end
 
 function Base.show(io::IO, l::AbstractFluxLayer)
     p, s, _ = destructure_parameters_states(l)
-    device = (length(p) > 0 ? p isa CuArray : s isa CuArray) ? "GPU" : "CPU"
+    device = on_gpu(p, s) ? "GPU" : "CPU"
     return print(io, string(typeof(l).name.name), "() ", string(length(p)), " Trainable Parameters & ",
                  string(length(s)), " States & Device = ", device)
 end

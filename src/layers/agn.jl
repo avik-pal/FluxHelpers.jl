@@ -38,6 +38,13 @@ end
 
 abstract type AtomicGraphLayer end
 
+function Base.show(io::IO, l::AtomicGraphLayer)
+    p, s, _ = destructure_parameters_states(l)
+    device = on_gpu(p, s) ? "GPU" : "CPU"
+    return print(io, string(typeof(l).name.name), "() ", string(length(p)), " Trainable Parameters & ",
+                 string(length(s)), " States & Device = ", device)
+end
+
 (l::AtomicGraphLayer)(x::Tuple) = l(x[1], x[2])
 
 struct AGNConv{W,B,F} <: AtomicGraphLayer

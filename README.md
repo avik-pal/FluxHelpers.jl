@@ -59,7 +59,7 @@ end # 427.532 ms (4011 allocations: 1.07 GiB)
 * `AGNConv`, `AGNMaxPool`, `AGNMeanPool`
 * `GroupNormV2`, `BatchNormV2`
 * `FChain`
-* `ReshapeLayer`, `FlattenLayer`, `SelectDim`
+* `ReshapeLayer`, `FlattenLayer`, `SelectDim`, `NoOpLayer`
 
 ### Graph Neural Networks
 
