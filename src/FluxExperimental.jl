@@ -105,6 +105,9 @@ include("layers/batch_norm.jl")
 # Extending the logging capabilities of wandb
 include("wandb.jl")
 
+# Explicit Layers
+include("explicit_layers/explicit_layers.jl")
+
 # Common Utilities
 export destructure_parameters_states, destructure_parameters
 export enable_fast_mode!
@@ -121,5 +124,8 @@ export GroupNormV2, BatchNormV2
 export ReshapeLayer, FlattenLayer, SelectDim, NoOpLayer
 # Logging
 export ParameterStateGradientWatcher
+# Explicit Layers
+export ExplicitLayers
+
 
 end
