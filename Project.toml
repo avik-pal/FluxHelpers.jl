@@ -1,19 +1,7 @@
-authors = ["Avik Pal <avikpal@mit.edu> and contributors"]
 name = "FluxExperimental"
 uuid = "c0d22e4d-7f3e-44a4-9c97-37045f84daf2"
+authors = ["Avik Pal <avikpal@mit.edu> and contributors"]
 version = "0.1.0"
-
-[compat]
-CUDA = "3"
-FileIO = "1"
-Flux = "0.12"
-Functors = "0.2"
-JLD2 = "0.4"
-NNlibCUDA = "0.2"
-Requires = "1"
-Wandb = "0.4"
-Zygote = "0.6"
-julia = "1.6"
 
 [deps]
 CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
@@ -31,6 +19,19 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Wandb = "ad70616a-06c9-5745-b1f1-6a5f42545108"
 Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
 ZygoteRules = "700de1a5-db45-46bc-99cf-38207098b444"
+
+[compat]
+CUDA = "3"
+FastBroadcast = "0.1"
+FileIO = "1"
+Flux = "0.12"
+Functors = "0.2"
+JLD2 = "0.4"
+NNlibCUDA = "0.2"
+Requires = "1"
+Wandb = "0.4"
+Zygote = "0.6"
+julia = "1.6"
 
 [extras]
 CPUSummary = "2a0fbf3d-bb9c-48f3-b0a9-814d99fd7ab9"
