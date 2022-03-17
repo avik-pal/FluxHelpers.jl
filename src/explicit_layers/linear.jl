@@ -6,15 +6,37 @@ struct Dense{bias,F1,F2,F3} <: ExplicitLayer
     initb::F3
 end
 
-function Dense(mapping::Pair{Int,Int}, λ=identity; initW=glorot_uniform, initb=zeros32, bias::Bool=true)
-    return Dense{bias,typeof(λ),typeof(initW),typeof(initb)}(λ, first(mapping), last(mapping), initW, initb)
+function Base.show(io::IO, d::Dense)
+    print(io, "Dense($(d.in_dims) => $(d.out_dims)")
+    (d.λ == identity) || print(io, ", $(d.λ)")
+    return print(io, ")")
 end
 
-initialparameters(d::Dense{true}) = (weight = d.initW(d.out_dims, d.in_dims), bias = d.initb(d.out_dims, 1))
-initialparameters(d::Dense{false}) = (weight = d.initW(d.out_dims, d.in_dims),)
+function Dense(mapping::Pair{<:Int,<:Int}, λ=identity; initW=glorot_uniform, initb=zeros32, bias::Bool=true)
+    return Dense(first(mapping), last(mapping), λ, initW=initW, initb=initb, bias=bias)
+end
 
-(d::Dense{false})(x::AbstractVecOrMat{T}, ps::NamedTuple, ::NamedTuple) where {T} = (NNlib.fast_act(d.λ, x)).(ps.weight * x)
+function Dense(in_dims::Int, out_dims::Int, λ=identity; initW=glorot_uniform, initb=zeros32, bias::Bool=true)
+    return Dense{bias,typeof(λ),typeof(initW),typeof(initb)}(λ, in_dims, out_dims, initW, initb)
+end
 
-(d::Dense{true})(x::AbstractMatrix{T}, ps::NamedTuple, ::NamedTuple) where {T} = (NNlib.fast_act(d.λ, x)).(ps.weight * x .+ ps.bias)
+function initialparameters(rng::AbstractRNG, d::Dense{true})
+    return (weight=d.initW(rng, d.out_dims, d.in_dims), bias=d.initb(rng, d.out_dims, 1))
+end
+initialparameters(rng::AbstractRNG, d::Dense{false}) = (weight=d.initW(rng, d.out_dims, d.in_dims),)
 
-(d::Dense{true})(x::AbstractVector{T}, ps::NamedTuple, ::NamedTuple) where {T} = (NNlib.fast_act(d.λ, x)).(ps.weight * x .+ vec(ps.bias))
+parameterlength(d::Dense{true}) = d.out_dims * (d.in_dims + 1)
+parameterlength(d::Dense{false}) = d.out_dims * d.in_dims
+statelength(d::Dense) = 0
+
+function (d::Dense{false})(x::AbstractVecOrMat{T}, ps::NamedTuple, ::NamedTuple) where {T}
+    return (NNlib.fast_act(d.λ, x)).(ps.weight * x)
+end
+
+function (d::Dense{true})(x::AbstractMatrix{T}, ps::NamedTuple, ::NamedTuple) where {T}
+    return (NNlib.fast_act(d.λ, x)).(ps.weight * x .+ ps.bias)
+end
+
+function (d::Dense{true})(x::AbstractVector{T}, ps::NamedTuple, ::NamedTuple) where {T}
+    return (NNlib.fast_act(d.λ, x)).(ps.weight * x .+ vec(ps.bias))
+end

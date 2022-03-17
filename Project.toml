@@ -1,7 +1,27 @@
-authors = ["Avik Pal <avikpal@mit.edu> and contributors"]
 name = "FluxExperimental"
 uuid = "c0d22e4d-7f3e-44a4-9c97-37045f84daf2"
+authors = ["Avik Pal <avikpal@mit.edu> and contributors"]
 version = "0.1.0"
+
+[deps]
+CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+FastBroadcast = "7034ab61-46d4-4ed7-9d0f-46aef9175898"
+FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
+FiniteDifferences = "26cc04aa-876d-5657-8c51-4c34ba976000"
+Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
+Functors = "d9f16b24-f501-4c13-a1f2-28368ffc5196"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+NNlib = "872c559c-99b0-510c-b3b7-b6c96a88d5cd"
+NNlibCUDA = "a00861dc-f156-4864-bf3c-e6376f28a68d"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Requires = "ae029012-a4dd-5104-9daa-d747884805df"
+Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+Tullio = "bc48ee85-29a4-5162-ae0b-a64e1601d4bc"
+Wandb = "ad70616a-06c9-5745-b1f1-6a5f42545108"
+Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
+ZygoteRules = "700de1a5-db45-46bc-99cf-38207098b444"
 
 [compat]
 CUDA = "3"
@@ -14,23 +34,6 @@ Requires = "1"
 Wandb = "0.4"
 Zygote = "0.6"
 julia = "1.6"
-
-[deps]
-CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
-FastBroadcast = "7034ab61-46d4-4ed7-9d0f-46aef9175898"
-FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
-FiniteDifferences = "26cc04aa-876d-5657-8c51-4c34ba976000"
-Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
-Functors = "d9f16b24-f501-4c13-a1f2-28368ffc5196"
-JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
-LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
-NNlibCUDA = "a00861dc-f156-4864-bf3c-e6376f28a68d"
-Requires = "ae029012-a4dd-5104-9daa-d747884805df"
-Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
-Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
-Wandb = "ad70616a-06c9-5745-b1f1-6a5f42545108"
-Zygote = "e88e6eb3-aa80-5325-afca-941959d7151f"
-ZygoteRules = "700de1a5-db45-46bc-99cf-38207098b444"
 
 [extras]
 CPUSummary = "2a0fbf3d-bb9c-48f3-b0a9-814d99fd7ab9"

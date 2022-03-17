@@ -15,8 +15,11 @@ function BatchNorm(
     return BatchNorm(λ, ϵ, momentum, chs, initβ, initγ, affine, track_stats)
 end
 
-initialparameters(l::BatchNorm) = l.affine ? (γ = l.initγ(l.chs), β = l.initβ(l.chs)) : NamedTuple()
-initialstates(l::BatchNorm) = (μ=zeros32(l.chs), σ²=ones32(l.chs), training=true)
+initialparameters(rng::AbstractRNG, l::BatchNorm) = l.affine ? (γ = l.initγ(rng, l.chs), β = l.initβ(rng, l.chs)) : NamedTuple()
+initialstates(::AbstractRNG, l::BatchNorm) = (μ=zeros32(l.chs), σ²=ones32(l.chs), training=true)
+
+parameterlength(l::BatchNorm) = l.affine ? (l.chs * 2) : 0
+statelength(l::BatchNorm) = 2 * l.chs + 1
 
 function Base.show(io::IO, l::BatchNorm)
     print(io, "BatchNorm($(l.chs)")
@@ -29,6 +32,7 @@ function batchnorm_fallback(
     BN::BatchNorm, x::AbstractArray{T,N}, ps::NamedTuple, states::NamedTuple
 ) where {T,N}
     @assert size(x, ndims(x) - 1) == BN.chs
+    @assert states.training && size(x, ndims(x)) > 1 "During `training`, `BatchNorm` can't handle Batch Size == 1"
     reduce_dims = [1:(N - 2); N]
     affine_shape = ntuple(i -> i == N - 1 ? size(x, N - 1) : 1, N)
     return norm_forward(BN, ps, states, x, reduce_dims, affine_shape)
@@ -36,4 +40,10 @@ end
 
 function (BN::BatchNorm)(x::AbstractArray{T}, ps::NamedTuple, states::NamedTuple) where {T}
     return batchnorm_fallback(BN, x, ps, states)
+end
+
+function (BN::BatchNorm)(x::Union{CuArray{T,2},CuArray{T,4},CuArray{T,5}}, ps::NamedTuple, states::NamedTuple) where {T<:Union{Float32,Float64}}
+    (!BN.affine || !BN.track_stats) && return batchnorm_fallback(BN, x, ps, states)
+    return BN.λ.(batchnorm(ps.γ, ps.β, x, states.μ, states.σ², BN.momentum; alpha=1, beta=0, eps=BN.ϵ,
+                           training=states.training))
 end
