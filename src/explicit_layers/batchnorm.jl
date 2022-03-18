@@ -38,6 +38,10 @@ function batchnorm_fallback(BN::BatchNorm, x::AbstractArray{T,N}, ps::NamedTuple
     return norm_forward(BN, ps, states, x, reduce_dims, affine_shape)
 end
 
+function (BN::BatchNorm)(x::AbstractVector, ps::NamedTuple, states::NamedTuple) where {T}
+    return vec(batchnorm_fallback(BN, reshape(x, :, 1), ps, states)), states
+end
+
 function (BN::BatchNorm)(x::AbstractArray{T}, ps::NamedTuple, states::NamedTuple) where {T}
     return batchnorm_fallback(BN, x, ps, states), states
 end
