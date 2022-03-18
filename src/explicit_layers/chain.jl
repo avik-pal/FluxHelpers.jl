@@ -44,8 +44,12 @@ end
 
 (c::Chain)(x, ps::NamedTuple, s::NamedTuple) = applychain(c.layers, x, ps, s)
 
-@generated function applychain(layers::Tuple{Vararg{<:Any,N}}, x, ps, s) where {N}
-    symbols = vcat(:x, [gensym() for _ in 1:N])
-    calls = [:($(symbols[i+1]) = layers[$i]($(symbols[i]), ps[$i], s[$i])) for i in 1:N]
+@generated function applychain(layers::Tuple{Vararg{<:Any,N}}, x, ps, st::NamedTuple{fields}) where {N, fields}
+    x_symbols = [gensym() for _ in 1:N]
+    st_symbols = [gensym() for _ in 1:N]
+    calls = [:(($(x_symbols[1]), $(st_symbols[1])) = layers[1](x, ps[1], st[1]))]
+    append!(calls, [:(($(x_symbols[i]), $(st_symbols[i])) = layers[$i]($(x_symbols[i - 1]), ps[$i], st[$i])) for i in 2:N])
+    append!(calls, [:(st = NamedTuple{$fields}((($(Tuple(st_symbols)...),))))])
+    append!(calls, [:(return $(x_symbols[N]), st)])
     return Expr(:block, calls...)
 end

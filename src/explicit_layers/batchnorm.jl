@@ -15,7 +15,9 @@ function BatchNorm(
     return BatchNorm(λ, ϵ, momentum, chs, initβ, initγ, affine, track_stats)
 end
 
-initialparameters(rng::AbstractRNG, l::BatchNorm) = l.affine ? (γ = l.initγ(rng, l.chs), β = l.initβ(rng, l.chs)) : NamedTuple()
+function initialparameters(rng::AbstractRNG, l::BatchNorm)
+    return l.affine ? (γ=l.initγ(rng, l.chs), β=l.initβ(rng, l.chs)) : NamedTuple()
+end
 initialstates(::AbstractRNG, l::BatchNorm) = (μ=zeros32(l.chs), σ²=ones32(l.chs), training=true)
 
 parameterlength(l::BatchNorm) = l.affine ? (l.chs * 2) : 0
@@ -28,9 +30,7 @@ function Base.show(io::IO, l::BatchNorm)
     return print(io, ")")
 end
 
-function batchnorm_fallback(
-    BN::BatchNorm, x::AbstractArray{T,N}, ps::NamedTuple, states::NamedTuple
-) where {T,N}
+function batchnorm_fallback(BN::BatchNorm, x::AbstractArray{T,N}, ps::NamedTuple, states::NamedTuple) where {T,N}
     @assert size(x, ndims(x) - 1) == BN.chs
     @assert states.training && size(x, ndims(x)) > 1 "During `training`, `BatchNorm` can't handle Batch Size == 1"
     reduce_dims = [1:(N - 2); N]
@@ -39,11 +39,17 @@ function batchnorm_fallback(
 end
 
 function (BN::BatchNorm)(x::AbstractArray{T}, ps::NamedTuple, states::NamedTuple) where {T}
-    return batchnorm_fallback(BN, x, ps, states)
+    return batchnorm_fallback(BN, x, ps, states), states
 end
 
-function (BN::BatchNorm)(x::Union{CuArray{T,2},CuArray{T,4},CuArray{T,5}}, ps::NamedTuple, states::NamedTuple) where {T<:Union{Float32,Float64}}
-    (!BN.affine || !BN.track_stats) && return batchnorm_fallback(BN, x, ps, states)
-    return BN.λ.(batchnorm(ps.γ, ps.β, x, states.μ, states.σ², BN.momentum; alpha=1, beta=0, eps=BN.ϵ,
-                           training=states.training))
+function (BN::BatchNorm)(
+    x::Union{CuArray{T,2},CuArray{T,4},CuArray{T,5}}, ps::NamedTuple, states::NamedTuple
+) where {T<:Union{Float32,Float64}}
+    (!BN.affine || !BN.track_stats) && return (batchnorm_fallback(BN, x, ps, states), states)
+    return (
+        BN.λ.(
+            batchnorm(ps.γ, ps.β, x, states.μ, states.σ², BN.momentum; alpha=1, beta=0, eps=BN.ϵ, training=states.training)
+        ),
+        states
+    )
 end

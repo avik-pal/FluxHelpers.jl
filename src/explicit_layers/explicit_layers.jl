@@ -11,8 +11,8 @@ initialparameters(l::ExplicitLayer) = initialparameters(Random.GLOBAL_RNG, l)
 initialstates(::AbstractRNG, ::ExplicitLayer) = NamedTuple()
 initialstates(l::ExplicitLayer) = initialstates(Random.GLOBAL_RNG, l)
 
-init(rng::AbstractRNG, l::ExplicitLayer) = (initialparameters(rng, l), initialstates(rng, l))
-init(l::ExplicitLayer) = init(Random.GLOBAL_RNG, l)
+setup(rng::AbstractRNG, l::ExplicitLayer) = (initialparameters(rng, l), initialstates(rng, l))
+setup(l::ExplicitLayer) = setup(Random.GLOBAL_RNG, l)
 
 nestedtupleofarrayslength(t::Any) = 1
 nestedtupleofarrayslength(t::AbstractArray) = length(t)
@@ -23,6 +23,8 @@ end
 
 parameterlength(l::ExplicitLayer) = nestedtupleofarrayslength(initialparameters(l))
 statelength(l::ExplicitLayer) = nestedtupleofarrayslength(initialstates(l))
+
+apply(model::ExplicitLayer, x, ps::NamedTuple, s::NamedTuple) = model(x, ps, s)
 
 # Test Mode
 function testmode(states::NamedTuple, mode::Bool = true)

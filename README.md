@@ -35,6 +35,9 @@ None of these attributes of BatchNorm change over time. Next each layer needs to
    calculated, but it is better to define these else we construct the parameter and then count the values which is quite
    wasteful.
 
+Additionally each ExplicitLayer must return a Tuple of length 2 with the first element being the computed result and the
+second element being the new state.
+
 ### Usage
 
 ```julia
@@ -52,20 +55,20 @@ model = ExplicitLayers.Chain(
 )
 
 # Parameter and State Variables
-ps, s = ExplicitLayers.init(MersenneTwister(0), model)
+ps, st = ExplicitLayers.setup(MersenneTwister(0), model)
 
 # Dummy Input
 x = rand(MersenneTwister(0), Float32, 128, 2);
 
 # Run the model
-model(x, ps, s)
+y, st = ExplicitLayers.apply(model, x, ps, st)
 
 # Gradients
-gs = gradient(p -> sum(model(x, p, s)), ps)[1]
+gs = gradient(p -> sum(ExplicitLayers.apply(model, x, p, st)[1]), ps)[1]
 
 # Optimisation
-st = Optimisers.setup(Optimisers.ADAM(0.0001), ps)
-st, ps = Optimisers.update(st, ps, gs)
+st_opt = Optimisers.setup(Optimisers.ADAM(0.0001), ps)
+st_opt, ps = Optimisers.update(st_opt, ps, gs)
 ```
 
 ### Currently Implemented Explicit Layers (none of these are exported)

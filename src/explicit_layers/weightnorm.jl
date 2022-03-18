@@ -1,4 +1,4 @@
-struct WeightNorm{which_params,L,D} <: ExplicitLayer
+struct WeightNorm{which_params,L<:ExplicitLayer,D} <: ExplicitLayer
     layer::L
     dims::D
 end

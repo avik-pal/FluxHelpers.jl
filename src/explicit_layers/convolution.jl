@@ -36,13 +36,13 @@ end
 
 parameterlength(c::Conv) = prod(c.kernel_size) * c.in_chs * c.out_chs + (c.bias ? c.out_chs : 0)
 
-function (c::Conv)(x::AbstractArray, ps::NamedTuple, ::NamedTuple)
+function (c::Conv)(x::AbstractArray, ps::NamedTuple, st::NamedTuple)
     λ = NNlib.fast_act(c.λ, x)
     cdims = DenseConvDims(x, ps.weight; stride = c.stride, padding = c.pad, dilation = c.dilation, groups = c.groups)
     if c.bias
-        return conv_bias_act(x, ps.weight, cdims, ps.bias, λ)
+        return conv_bias_act(x, ps.weight, cdims, ps.bias, λ), st
     else
-        return λ.(conv(x, ps.weight, cdims))
+        return λ.(conv(x, ps.weight, cdims)), st
     end
 end
 

@@ -29,14 +29,14 @@ parameterlength(d::Dense{true}) = d.out_dims * (d.in_dims + 1)
 parameterlength(d::Dense{false}) = d.out_dims * d.in_dims
 statelength(d::Dense) = 0
 
-function (d::Dense{false})(x::AbstractVecOrMat{T}, ps::NamedTuple, ::NamedTuple) where {T}
-    return (NNlib.fast_act(d.λ, x)).(ps.weight * x)
+function (d::Dense{false})(x::AbstractVecOrMat{T}, ps::NamedTuple, st::NamedTuple) where {T}
+    return (NNlib.fast_act(d.λ, x)).(ps.weight * x), st
 end
 
-function (d::Dense{true})(x::AbstractMatrix{T}, ps::NamedTuple, ::NamedTuple) where {T}
-    return (NNlib.fast_act(d.λ, x)).(ps.weight * x .+ ps.bias)
+function (d::Dense{true})(x::AbstractMatrix{T}, ps::NamedTuple, st::NamedTuple) where {T}
+    return (NNlib.fast_act(d.λ, x)).(ps.weight * x .+ ps.bias), st
 end
 
-function (d::Dense{true})(x::AbstractVector{T}, ps::NamedTuple, ::NamedTuple) where {T}
-    return (NNlib.fast_act(d.λ, x)).(ps.weight * x .+ vec(ps.bias))
+function (d::Dense{true})(x::AbstractVector{T}, ps::NamedTuple, st::NamedTuple) where {T}
+    return (NNlib.fast_act(d.λ, x)).(ps.weight * x .+ vec(ps.bias)), st
 end
