@@ -32,7 +32,7 @@ end
 
 function batchnorm_fallback(BN::BatchNorm, x::AbstractArray{T,N}, ps::NamedTuple, states::NamedTuple) where {T,N}
     @assert size(x, ndims(x) - 1) == BN.chs
-    @assert states.training && size(x, ndims(x)) > 1 "During `training`, `BatchNorm` can't handle Batch Size == 1"
+    @assert !states.training || size(x, ndims(x)) > 1 "During `training`, `BatchNorm` can't handle Batch Size == 1"
     reduce_dims = [1:(N - 2); N]
     affine_shape = ntuple(i -> i == N - 1 ? size(x, N - 1) : 1, N)
     return norm_forward(BN, ps, states, x, reduce_dims, affine_shape)
