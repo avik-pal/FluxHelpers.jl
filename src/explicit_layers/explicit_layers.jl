@@ -1,7 +1,7 @@
 module ExplicitLayers
 
-using ZygoteRules, FastBroadcast, Statistics, Zygote, NNlib, CUDA, Random
-import Flux: zeros32, ones32, glorot_normal, glorot_uniform, convfilter, expand, calc_padding, DenseConvDims, _maybetuple_string
+using ZygoteRules, FastBroadcast, Statistics, Zygote, NNlib, CUDA, Random, Setfield
+import Flux: zeros32, ones32, glorot_normal, glorot_uniform, convfilter, expand, calc_padding, DenseConvDims, _maybetuple_string, reshape_cell_output
 
 # Base Type
 abstract type ExplicitLayer end
@@ -55,5 +55,7 @@ include("batchnorm.jl")
 include("linear.jl")
 include("convolution.jl")
 include("weightnorm.jl")
+include("wrappers.jl")
+
 
 end
