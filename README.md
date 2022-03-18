@@ -38,7 +38,7 @@ None of these attributes of BatchNorm change over time. Next each layer needs to
 ### Usage
 
 ```julia
-using FluxExperimental, Random, Flux
+using FluxExperimental, Random, Flux, Optimisers
 
 # Construct the layer
 model = ExplicitLayers.Chain(
@@ -61,7 +61,11 @@ x = rand(MersenneTwister(0), Float32, 128, 2);
 model(x, ps, s)
 
 # Gradients
-gradient(p -> sum(model(x, p, s)), ps)
+gs = gradient(p -> sum(model(x, p, s)), ps)[1]
+
+# Optimisation
+st = Optimisers.setup(Optimisers.ADAM(0.0001), ps)
+st, ps = Optimisers.update(st, ps, gs)
 ```
 
 ### Currently Implemented Explicit Layers (none of these are exported)
