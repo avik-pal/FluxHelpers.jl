@@ -28,7 +28,7 @@ ZygoteRules = "700de1a5-db45-46bc-99cf-38207098b444"
 [compat]
 CUDA = "3"
 FileIO = "1"
-Flux = "0.12"
+Flux = "0.12,0.13"
 Functors = "0.2"
 JLD2 = "0.4"
 NNlibCUDA = "0.2"
